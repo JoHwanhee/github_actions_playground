@@ -9,13 +9,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: 버전 정보 추출
-      run: echo "##[set-output name=version;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
+      run: echo "##[set-output name=version;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '#release')"
       id: extract_version_name       
+    - name: Get Time
+      if: ${{steps.extract_version_name.outputs.version}}
+      id: time
+      uses: nanzm/get-time-action@v1.1
+      with:
+        timeZone: 8
+        format: 'YYYY-MM-DD-HH-mm-ss'
     - name: Release 생성 
       if: ${{steps.extract_version_name.outputs.version}}
       uses: actions/create-release@v1
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with: 
-        tag_name: ${{ steps.extract_version_name.outputs.version }} 
-        release_name: ${{ steps.extract_version_name.outputs.version }} 
+        tag_name: ${{ steps.time.outputs.time }}
+        release_name: ${{ steps.time.outputs.time }}
