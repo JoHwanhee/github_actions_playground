@@ -9,7 +9,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: 버전 정보 추출
-      run: echo "##[set-output name=prefix;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '(#release [a-zA-A]+)' | sed 's/#release //'"
+      run: | 
+        echo "##[set-output name=prefix;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '(#release [a-zA-A]+)' | sed 's/#release //'"
       id: extract_version_name
     - name: Get Time
       if: ${{steps.extract_version_name.outputs.prefix}}
