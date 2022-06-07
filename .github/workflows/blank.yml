@@ -9,20 +9,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: 버전 정보 추출
-      run: echo "##[set-output name=version;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '#release')"
-      id: extract_version_name       
+      run: echo "##[set-output name=prefix;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '#release [.]+') | sed 's/#release //'"
+      id: extract_version_name
     - name: Get Time
-      if: ${{steps.extract_version_name.outputs.version}}
+      if: ${{steps.extract_version_name.outputs.prefix}}
       id: time
       uses: nanzm/get-time-action@v1.1
       with:
         timeZone: 8
-        format: 'YYYY-MM-DD-HH-mm-ss'
+        format: 'YYYY.MM.HHmmss'
     - name: Release 생성 
-      if: ${{steps.extract_version_name.outputs.version}}
+      if: ${{steps.extract_version_name.outputs.prefix}}
       uses: actions/create-release@v1
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with: 
-        tag_name: ${{ steps.time.outputs.time }}
-        release_name: ${{ steps.time.outputs.time }}
+        tag_name: ${{steps.extract_version_name.outputs.prefix}}-${{ steps.time.outputs.time }}
+        release_name: ${{steps.extract_version_name.outputs.prefix}}-${{ steps.time.outputs.time }}
