@@ -29,17 +29,34 @@
 #         release_name: ${{steps.extract_version_name.outputs.prefix}}-${{ steps.time.outputs.time }}
 
 
-name: Release Drafter
-on:
-  push:
-    branches:
-      - master
+# name: Release Drafter
+# on:
+#   push:
+#     branches:
+#       - master
+# jobs:
+#   update_release_draft:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: release-drafter/release-drafter@v5
+#         with:
+#           config-name: release-drafter-config.yml
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+name: Public IP
+
+on: push
+
 jobs:
-  update_release_draft:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: release-drafter/release-drafter@v5
-        with:
-          config-name: release-drafter-config.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Public IP
+      id: ip
+      uses: haythem/public-ip@v1.2
+
+    - name: Print Public IP
+      run: |
+        echo ${{ steps.ip.outputs.ipv4 }}
+        echo ${{ steps.ip.outputs.ipv6 }}
